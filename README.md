@@ -85,3 +85,54 @@ A aplicação é totalmente adaptável para:
 3. **Loading State**: Indicador visual durante o processamento
 4. **Tratamento de Erros**: Mensagens amigáveis em caso de erro
 5. **Renderização Markdown**: Exibe o resultado formatado em markdown
+
+## 🐳 Deploy com Docker
+
+### Build e Executar
+
+```bash
+# Build da imagem
+docker build -t resumo-semanal .
+
+# Executar o container
+docker run -d -p 4173:4173 --name resumo-semanal resumo-semanal
+
+# Ver logs
+docker logs -f resumo-semanal
+
+# Parar o container
+docker stop resumo-semanal
+
+# Remover o container
+docker rm resumo-semanal
+```
+
+A aplicação estará disponível em: `http://localhost:4173`
+
+### Configuração de Porta
+
+Para usar uma porta diferente:
+
+```bash
+docker run -d -p 8080:4173 --name resumo-semanal resumo-semanal
+```
+
+### Integração com Nginx
+
+Configure seu Nginx para fazer proxy reverso:
+
+```nginx
+server {
+    listen 80;
+    server_name seu-dominio.com;
+
+    location / {
+        proxy_pass http://localhost:4173;
+        proxy_http_version 1.1;
+        proxy_set_header Upgrade $http_upgrade;
+        proxy_set_header Connection 'upgrade';
+        proxy_set_header Host $host;
+        proxy_cache_bypass $http_upgrade;
+    }
+}
+```
